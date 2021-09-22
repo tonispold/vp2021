@@ -71,7 +71,7 @@
 	
 	$photo_select_html = "\n" .'<select name="photo_select">' ."\n";
 	for($i = 0;$i < $file_count;$i ++) {
-		$photo_select_html .= '<option value="' .$i .'"';
+		$photo_select_html .= '<option value="' .$i .'">';
 		if($i == $photo_num){
 			$photo_select_html .= " selected";
 		}
