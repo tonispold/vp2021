@@ -43,7 +43,7 @@
 	<h2> Eesti filmide lisamine</h2>
 	 <form method="POST">
         <label for="title_input">Filmi pealkiri</label>
-        <input type="text" name="title_input" id="title_input" placeholder="filmi pealkiri" value="<?= isset($_POST['title_input']) ? $_POST['title_input'] : ''; ?>"<?php echo $title_input_error; ?></span>
+        <input type="text" name="title_input" id="title_input" placeholder="filmi pealkiri" value="<?= isset($_POST['title_input']) ? $_POST['title_input'] : ''; ?>"><?php echo $title_input_error; ?></span>
         <br> 
         <label for="year_input">Valmimisaasta</label>
         <input type="number" name="year_input" id="year_input" min="1912" value="<?php echo date("Y"); ?>">

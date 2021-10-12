@@ -1,6 +1,11 @@
 <?php
 	$author_name = "Tõnis Põld";
 	
+	//alustame sessiooni
+	session_start();
+	
+	require_once("../../config.php");
+	require_once("fnc_user.php");
 	//kontrollin, kas POST info jõuab kuhugi
 	//var_dump($_POST);
 	//kontrollime, kas klikiti submit nuppu
@@ -79,6 +84,33 @@
 	}
 	$photo_select_html .= "</select> \n";
 	
+	//sisselogimine
+	$email = null;
+	$email_error = null;
+	$password_error = null;
+	$notice = null;
+	if(isset($_POST["login_submit"])){
+		if(isset($_POST["email_input"]) and !empty($_POST["email_input"])){
+			$email = filter_var($_POST["email_input"], FILTER_VALIDATE_EMAIL);
+			if(strlen($email) < 5){
+				$email_error = "Palun sisesta kasutajatunnus (e-mail)!";
+			}
+		} else {
+			$email_error = "Palun sisesta kasutajatunnus (e-mail)!";
+		}
+		if(isset($_POST["password_input"]) and !empty($_POST["password_input"])){
+			if(strlen($_POST["password_input"]) < 8){
+				$password_error = "Sisestatud salasõna on liiga lühike!";
+			}
+		} else {
+			$password_error = "Palun sisesta salasõna!";
+		}
+		if(empty($email_error) and empty($password_error)){
+			$notice = sign_in($email, $_POST["password_input"]);
+		} else {
+			$notice = $email_error ." " .$password_error;
+		}
+    }
 ?>
 <!DOCTYPE html>
 <html lang="et">
@@ -91,6 +123,13 @@
 	<p>Tere! Olen Tõnis Põld ja tulen Rakverest. Ootan väga huvitavat õppeaastat ning loodan teid näha ka järgmine aasta!</p>
 	<p>See leht on loodud õppetöö raames ja ei sisalda tõsiseltvõetavat sisu!</p>
 	<p>Õppetöö toimub <a href="https://www.tlu.ee/dt">Tallinna Ülikooli Digitehnoloogiate instituudis</a>.</p>
+	<hr>
+	 <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+        <input type="email" name="email_input" placeholder="Kasutajatunnus ehk e-post" value ="<?= isset($_POST['email_input']) ? $_POST['email_input'] : ''; ?>">
+        <input type="password" name="password_input" placeholder="salasõna">
+        <input type="submit" name="login_submit" value="Logi sisse"><?php echo $notice; ?>
+    </form>
+	<p> Loo omale <a href="add_user.php">kasutajakonto</a></p> 
 	<hr>
 	<form method="POST">
 		<input type="text" placeholder="omadussõna tänase kohta" name="todays_adjective_input" value="<?php echo $todays_adjective; ?>">
