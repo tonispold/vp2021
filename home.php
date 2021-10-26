@@ -24,6 +24,7 @@
 			<li><a href="listfilms.php">Filmide nimekirja vaatamine</a> versioon 1</li>
 			<li><a href="addfilms.php">Filmide lisamine andmebaasi</a> versioon 1</li>
 		<li><a href="user_profile.php">Kasutajaprofiil</a></li>
+		<li><a href="movie_relations.php">Filmi, isiku jms seoste loomine</a></li>
     </ul>
 </body>
 </html>
