@@ -25,6 +25,9 @@
 			<li><a href="addfilms.php">Filmide lisamine andmebaasi</a> versioon 1</li>
 		<li><a href="user_profile.php">Kasutajaprofiil</a></li>
 		<li><a href="movie_relations.php">Filmi, isiku jms seoste loomine</a></li>
+		<li><a href="gallery_photo_upload.php">Galeriipiltide üleslaadimine</a></li>
+		<li><a href="gallery_public.php">Sisselogitud kasutajatele nähtavate fotode galerii</a></li>
+		<li><a href="gallery_own.php">Minu fotode galerii</a></li>
     </ul>
 </body>
 </html>

@@ -64,7 +64,6 @@
 	$person_select_for_photo = null;
 	$photo_upload_notice = null;
 	$person_photo_dir = "person_photo/";
-	$person_photo_dir = "../person_photo/";
     $file_type = null;
     $file_name = null;
 	
