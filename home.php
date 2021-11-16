@@ -11,6 +11,14 @@
         header("Location: page2.php");
     }
 	
+	//testin klassi
+	/* require_once("classes/Test.class.php");
+	$test_object = new Test();
+	echo " Teadaolev, avalik number: " .$test_object->known_number;
+	$test_object->reveal();
+	unset($test_object); */
+	
+	
 	require("page_header.php");
 ?>
 

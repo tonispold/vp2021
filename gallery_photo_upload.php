@@ -15,6 +15,7 @@
 	require_once("../../config.php");
 	require_once("fnc_photoupload.php");
 	require_once("fnc_general.php");
+	require_once("classes/Photoupload.class.php");
 	
 	$photo_error = null;
 	$photo_upload_notice = null;
@@ -28,6 +29,7 @@
     $file_name = null;
 	$alt_text = null;
 	$privacy = 1;
+		$allowed_photo_types = ["image/jpeg", "image/png"];
 	$watermark_file = "vp_logo_color_w100_overlay.png";
 	
     if(isset($_POST["photo_submit"])){
@@ -69,57 +71,48 @@
 			if(empty($privacy)){
 				$photo_error . " Privaatsus on määramata!";
 			}
+			
+			$photo_upload = new Photoupload($_FILES["photo_input"], $file_type);
+			
+			
+			if(empty($photo_upload->error)){
+				//kas on lubatud tüüpi
+				$photo_error .= $photo_upload->check_allowed_type($allowed_photo_types);
+				
+				if(empty($photo_upload->error)){
+					//kas on lubatud suurusega
+					$photo_error .= $photo_upload->check_size($photo_file_size_limit);
+					//kui seni vigu pole, laeme üles
+					if(empty($photo_error)){
+						//teen ajatempli
+						$time_stamp = microtime(1) * 10000;
 
+						//moodustan failinime, kasutame eesliidet
+						$file_name = $photo_file_name_prefix .$time_stamp ."." .$file_type;
+						
+						$photo_upload->create_filename($photo_file_name_prefix);
+						$photo_upload->resize_photo($photo_width_limit, $photo_height_limit);
+						$photo_upload->add_watermark($watermark_file);
+						$photo_upload_notice = "Vähendatud pildi " .$photo_upload->save_image($photo_upload_normal_dir, $file_name);
+						$photo_upload->resize_photo($thumbnail_width, $thumbnail_height);
+						$photo_upload_notice = "Pisipildi " .$photo_upload->save_image($photo_upload_thumb_dir, $file_name);
+						
+						if(move_uploaded_file($_FILES["photo_input"]["tmp_name"], $photo_upload_orig_dir .$file_name)){
+							$photo_upload_notice .= " Originaalfoto laeti üles!";
+						} else {
+							$photo_upload_notice .= " Foto üleslaadimine ei õnnestunud!";
+						}
 
-            if(empty($photo_error)){
-                //teen ajatempli
-                $time_stamp = microtime(1) * 10000;
-
-                //moodustan failinime, kasutame eesliidet
-                $file_name = $photo_file_name_prefix .$time_stamp ."." .$file_type;
-
-                //teen graafikaobjekti, image objekti
-                if($file_type == "jpg"){
-                    $my_temp_image = imagecreatefromjpeg($_FILES["photo_input"]["tmp_name"]);
-                }
-                if($file_type == "png"){
-                    $my_temp_image = imagecreatefrompng($_FILES["photo_input"]["tmp_name"]);
-                }
-                if($file_type == "gif"){
-                    $my_temp_image = imagecreatefromgif($_FILES["photo_input"]["tmp_name"]);
-                }
-
-                //loome uue pikslikogumi
-                $my_new_temp_image = resize_photo($my_temp_image, $photo_width_limit, $photo_height_limit);
-
-                //lisan vesimärgi
-
-				$my_new_temp_image = add_watermark($my_new_temp_image, $watermark_file);
-
-                //salvestan
-                $photo_upload_notice = "Vähendatud pildi " .save_image($my_new_temp_image, $file_type, $photo_upload_normal_dir .$file_name);
-                imagedestroy($my_new_temp_image);
-
-				//teen pisipildi
-				$my_new_temp_image = resize_photo($my_temp_image, $thumbnail_width, $thumbnail_height, false);
-                $photo_upload_notice .= " Pisipildi " .save_image($my_new_temp_image, $file_type, $photo_upload_thumb_dir .$file_name);
-                imagedestroy($my_new_temp_image);
-
-                imagedestroy($my_temp_image);
-
-                //kopeerime pildi originaalkujul, originaalnimega vajalikku kataloogi
-                if(move_uploaded_file($_FILES["photo_input"]["tmp_name"], $photo_upload_orig_dir .$file_name)){
-                    $photo_upload_notice .= " Originaalfoto laeti üles!";
-                    //$photo_upload_notice = store_person_photo($file_name, $_POST["person_for_photo_input"]);
-                } else {
-                    $photo_upload_notice .= " Foto üleslaadimine ei õnnestunud!";
-                }
-
-				$photo_upload_notice .= " " .store_photo_data($file_name, $alt_text, $privacy);
-				$alt_text = null;
-				$privacy = 1;
-            }
-        } else {
+						$photo_upload_notice .= " " .store_photo_data($file_name, $alt_text, $privacy);
+						$alt_text = null;
+						$privacy = 1;
+					}
+				}
+			}
+					
+					unset($photo_upload);
+		
+		} else {
             $photo_error = "Pildifaili pole valitud!";
         }
 
